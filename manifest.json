@@ -1,7 +1,7 @@
 {
-  "name": "Re-date",
+  "name": "nhl.com-timezone-converter",
   "version": "0.1",
-  "description": "",
+  "description": "Convert nhl.com Eastern Time to your local time.",
   "content_scripts": [{
     "js": ["content.js"],
     "matches": ["https://www.nhl.com/*"]
