@@ -1,0 +1,10 @@
+{
+  "name": "Re-date",
+  "version": "0.1",
+  "description": "",
+  "content_scripts": [{
+    "js": ["content.js"],
+    "matches": ["https://www.nhl.com/*"]
+  }],
+  "manifest_version": 2
+}
