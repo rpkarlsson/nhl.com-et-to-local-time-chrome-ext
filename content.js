@@ -1,14 +1,20 @@
 const timeConvertions = {"ET": 5}
+const offset = (new Date()).getTimezoneOffset() / 60
+
+const shouldConvertZone = zone => Object.keys(timeConvertions).includes(zone)
 
 const convert = s => {
-  const [time, period , zone] = s.split(" ")
+  const [time, period, zone] = s.split(" ")
+
+  if (!shouldConvertZone(zone))
+    return null
+
   const [hourString, m] = time.split(":")
   const hour = parseInt(hourString)
 
   if (isNaN(hour))
       return null
 
-  const offset = (new Date()).getTimezoneOffset() / 60
   const twHour = period === "PM" ? hour + 12 : hour
   const h1 = (twHour + timeConvertions[zone]) - offset
   const h2 = h1 > 24 ? h1 - 24 : h1
@@ -17,15 +23,12 @@ const convert = s => {
   return `${h}:${m} UTC${offset > -1 ? "+" : ""}${offset}`
 }
 
-const changeDate = (el, innerText) => {
-  if (innerText)
-    el.innerText = innerText
-}
-
-
-const changeDateContent = (el, innerText) => {
-  if (innerText)
-    el.textContent = innerText
+const changeDates = (elements, attr) => {
+  for (let el of elements) {
+    const newText = convert(el[attr])
+    if (newText)
+      el[attr] = newText
+  }
 }
 
 const convertSchedule = () => {
@@ -33,18 +36,14 @@ const convertSchedule = () => {
   if (dateElements.length === 0)
     window.requestAnimationFrame(convertSchedule);
   else
-    for (let el of dateElements)
-      changeDate(el, convert(el.innerText))
+    changeDates(dateElements, "innerText")
 }
 
-const convertBar = () => {
-  const dateElements = document.getElementsByClassName("g5-component--nhl-scores__status-game-time")
-  if (dateElements.length === 0)
-    window.requestAnimationFrame(convertBar);
-  else
-    for (let el of dateElements)
-      changeDateContent(el, convert(el.textContent))
-}
+const convertBar = () =>
+      changeDates(
+        document.getElementsByClassName("g5-component--nhl-scores__status-game-time"),
+        "textContent")
+
 
 convertSchedule()
-convertBar()
+window.setInterval(convertBar, 1000)
